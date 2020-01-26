@@ -1,0 +1,14 @@
+[Unit]
+Description=TuyaPrometheus worker
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/node /opt/tuya-prometheus/index.js
+User=tuyaprometheus
+Group=tuyaprometheus
+Restart=always
+StandardError=journal
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target

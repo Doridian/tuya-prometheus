@@ -1,0 +1,16 @@
+{
+  "name": "tuya-prometheus",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "@tuyapi/cloud": "^0.4.1",
+    "prom-client": "^11.5.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Doridian <git@doridian.net>",
+  "license": "ISC"
+}
