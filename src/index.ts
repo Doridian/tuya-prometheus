@@ -1,4 +1,4 @@
-import TuyaCloud, { DeviceResponse, LocationResponse } from '@tuyapi/cloud';
+import TuyaCloud, { TuyaAction } from '@tuyapi/cloud';
 import { readFileSync } from 'fs';
 import { createServer } from 'http';
 import { Gauge, register } from 'prom-client';
@@ -38,9 +38,9 @@ abstract class TuyaDevice {
 	public abstract get(addUnknown: boolean): Promise<ValMap>;
 	public abstract set(data: ValMap): Promise<void>;
 
-	protected async request<T>(action: string, data: { [key: string]: unknown } = {}) {
+	protected async request(action: TuyaAction, data: { [key: string]: unknown } = {}) {
 		data.devId = this.devId;
-		return this.api.request<T>({ action, data, gid: this.gid });
+		return this.api.request({ action, data, gid: this.gid });
 	}
 }
 
@@ -67,7 +67,7 @@ abstract class MappableTuyaDevice extends TuyaDevice {
 	public abstract getDPSMap(): DPSMap;
 
 	public async get(addUnknown = false) {
-		const data = await this.request<RawValMap>('tuya.m.device.dp.get');
+		const data = <RawValMap>(await this.request('tuya.m.device.dp.get'));
 		return this.mapDPS(data, addUnknown);
 	}
 
@@ -249,11 +249,11 @@ async function main() {
 
 	console.log('Login done');
 
-	const locations = await globalApi.request<LocationResponse[]>({ action: 'tuya.m.location.list' });
+	const locations = await globalApi.request({ action: 'tuya.m.location.list' });
 	console.log('Got locations done');
 
 	for (const location of locations) {
-		const rawDevices = await globalApi.request<DeviceResponse[]>({ action: 'tuya.m.my.group.device.list', gid: location.groupId });
+		const rawDevices = await globalApi.request({ action: 'tuya.m.my.group.device.list', gid: location.groupId });
 		console.log('Got product');
 		for (const device of rawDevices) {
 			let tuyaDev;
