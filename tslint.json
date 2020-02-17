@@ -1,0 +1,76 @@
+{
+    "defaultSeverity": "error",
+    "extends": "tslint:latest",
+    "rules": {
+      "max-classes-per-file": false,
+      "promise-function-async": true,
+      "no-floating-promises": [true, "PromiseLike", "Promise", "Bluebird"],
+      "await-promise": [true, "PromiseLike", "Promise", "Bluebird"],
+      "no-submodule-imports": true,
+      "no-this-assignment": [true, {
+        "allow-destructuring": true
+      }],
+      "no-implicit-dependencies": [true, "dev"],
+      "no-angle-bracket-type-assertion": false,
+      "array-type": false,
+      "interface-name": [true, "never-prefix"],
+      "no-namespace": false,
+      "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
+      "arrow-parens": [true, "ban-single-arg-parens"],
+      "quotemark": [true, "single", "avoid-escape", "avoid-template"],
+      "cyclomatic-complexity": [true, 35],
+      "member-ordering": [
+        true,
+        {
+          "order": [
+            "public-static-field",
+            "public-static-method",
+            "protected-static-field",
+            "protected-static-method",
+            "private-static-field",
+            "private-static-method",
+            "public-instance-field",
+            "protected-instance-field",
+            "private-instance-field",
+            "public-constructor",
+            "protected-constructor",
+            "private-constructor",
+            "public-instance-method",
+            "protected-instance-method",
+            "private-instance-method"
+          ]
+        }
+      ],
+      "no-inferrable-types": true,
+      "no-unnecessary-type-assertion": true,
+      "no-unsafe-any": true,
+      "object-literal-key-quotes": [true, "as-needed"],
+      "whitespace": {
+        "options": [
+          "check-branch",
+          "check-decl",
+          "check-module",
+          "check-operator",
+          "check-separator",
+          "check-type",
+          "check-type-operator",
+          "check-rest-spread",
+          "check-preblock"
+        ]
+      },
+      "no-bitwise": false,
+      "no-console": false,
+      "trailing-comma": [true, {
+        "esSpecCompliant": true,
+        "multiline": "always",
+        "singleline": "never"
+      }],
+      "ban-ts-ignore": true,
+      "function-constructor": true,
+      "unnecessary-constructor": true,
+      "unnecessary-bind": true
+    },
+    "jsRules": {
+      "quotemark": [true, "single", "avoid-escape", "avoid-template"]
+    }
+  }
