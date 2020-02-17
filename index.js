@@ -146,7 +146,7 @@ MappableTuyaDevice.gauges = {};
 class StitchTuyaSocket extends MappableTuyaDevice {
 	_getDPSMap() {
 		return {
-			'1': { name: 'on', help: 'On', type: 'boolean', settable: true, unmap(on) { return !!on; } },
+			'1': { name: 'power_on', help: 'On', type: 'boolean', settable: true, unmap(on) { return !!on; } },
 			'4': { name: 'current', help: 'Current (A)', type: 'number', map(a) { return a / 1000.0; } },
 			'5': { name: 'power', help: 'Power (W)', type: 'number', map(w) { return w / 10.0; } },
 			'6': { name: 'voltage', help: 'Voltage (V)', type: 'number', map(v) { return v / 10.0; } },
