@@ -3,7 +3,7 @@ Description=TuyaPrometheus worker
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/node /opt/tuya-prometheus/index.js
+ExecStart=/usr/bin/node /opt/tuya-prometheus/dist/index.js
 User=tuyaprometheus
 Group=tuyaprometheus
 Restart=always
