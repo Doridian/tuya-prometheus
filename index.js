@@ -181,7 +181,7 @@ class StitchTuyaSocket extends MappableTuyaDevice {
 	}
 }
 
-const devices = [];
+const devices = {};
 
 async function outerPoll() {
 	console.log('Poll start');
@@ -199,9 +199,12 @@ async function outerPoll() {
 	setTimeout(outerPoll, 2000);
 }
 
+function processDeviceName(name) {
+	return name.toLowerCase().trim().replace(/[ \t\r\n_]+/g, '_').replace(/[^a-z0-9_]/g, '');
+}
+
 async function poll() {
-	for(const device of devices) {
-		const safeDeviceName = device.name.replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
+	for(const device of Object.keys(devices)) {
 		await device.writePrometheusGauges();
 	}
 }
@@ -233,7 +236,7 @@ async function main() {
 
 			if (tuyaDev) {
 				tuyaDev.makePrometheusGauges();
-				devices.push(tuyaDev);
+				devices[processDeviceName(device.name)] = tuyaDev;
 			}
 		}
 	}
@@ -257,6 +260,28 @@ const server = http.createServer((req, res) => {
 	if (!DATA_OK) {
 		res.writeHead(500);
 		res.end();
+		return;
+	}
+
+	if (req.method === 'PUT') {
+		const dev = devices[processDeviceName(req.url.substr(1))];
+		if (!dev) {
+			res.writeHead(404);
+			res.end();
+			return;
+		}
+
+		let body = '';
+		req.on('data', chunk => {
+			body += chunk.toString();
+		});
+		req.on('end', () => {
+			res.writeHead(204);
+			res.end();
+
+			const data = JSON.parse(body);
+			dev.set(data);
+		});
 		return;
 	}
 
