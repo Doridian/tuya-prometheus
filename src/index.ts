@@ -10,7 +10,7 @@ interface Config {
 	email: string;
 	password: string;
 }
-const CONFIG = <Config>JSON.parse(readFileSync('../config/config.json').toString('utf8'));
+const CONFIG = <Config>JSON.parse(readFileSync('./config/config.json').toString('utf8'));
 
 const globalApi = new TuyaCloud({
 	key: CONFIG.appKey,

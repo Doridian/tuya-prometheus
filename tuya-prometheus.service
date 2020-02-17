@@ -4,6 +4,7 @@ Description=TuyaPrometheus worker
 [Service]
 Type=simple
 ExecStart=/usr/bin/node /opt/tuya-prometheus/dist/index.js
+WorkingDirectory=/opt/tuya-prometheus
 User=tuyaprometheus
 Group=tuyaprometheus
 Restart=always
