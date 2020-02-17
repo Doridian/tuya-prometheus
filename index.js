@@ -204,7 +204,7 @@ function processDeviceName(name) {
 }
 
 async function poll() {
-	for(const device of Object.keys(devices)) {
+	for(const device of Object.values(devices)) {
 		await device.writePrometheusGauges();
 	}
 }
