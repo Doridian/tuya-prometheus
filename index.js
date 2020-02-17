@@ -12,6 +12,8 @@ const api = new TuyaCloud({
 
 let DATA_OK = false;
 
+const devices = {};
+
 class TuyaDevice {
 	constructor(api, name, gid, devId) {
 		this.api = api;
@@ -181,8 +183,6 @@ class StitchTuyaSocket extends MappableTuyaDevice {
 	}
 }
 
-const devices = {};
-
 async function outerPoll() {
 	console.log('Poll start');
 	const timeout = setTimeout(() => yprocess.exit(2), 30000);
@@ -213,7 +213,7 @@ async function main() {
 	console.log('Main start');
 	const timeout = setTimeout(() => process.exit(3), 30000);
 
-	const loginResult = await api.loginEx({
+	await api.loginEx({
 		email: CONFIG.email,
 		password: CONFIG.password,
 	});
