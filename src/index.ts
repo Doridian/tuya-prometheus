@@ -289,8 +289,6 @@ async function refreshDevices() {
 		const rawDevices = await globalApi.request({ action: 'tuya.m.my.group.device.list', gid: location.groupId });
 		console.log('Got products');
 		for (const device of rawDevices) {
-			console.log('Device: ', device.name, device.dpMaxTime, minDpMaxTime);
-
 			if (device.dpMaxTime && device.dpMaxTime < minDpMaxTime) {
 				continue;
 			}
