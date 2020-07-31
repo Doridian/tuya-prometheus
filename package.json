@@ -16,9 +16,10 @@
   },
   "scripts": {
     "clear": "rimraf dist",
-    "build": "rimraf dist && tsc -p tsconfig.json",
+    "build": "npm run clear && tsc -p tsconfig.json",
     "build:watch": "tsc --watch -p tsconfig.json",
-    "lint": "tslint -t verbose -p tsconfig.json"
+    "lint": "tslint -t verbose -p tsconfig.json",
+    "start": "npm run build && node dist/index.js"
   },
   "author": "Doridian <git@doridian.net>",
   "license": "ISC"

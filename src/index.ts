@@ -18,9 +18,12 @@ const globalApi = new TuyaCloud({
 	region: CONFIG.countryCode,
 });
 
+const DEVICE_REFRESH_INTERVAL = 60 * 60 * 1000;
+const DEVICE_INACTIVE_TIMEOUT = 30 * 60 * 1000;
+
 let DATA_OK = false;
 
-const devices: { [key: string]: TuyaDevice } = {};
+let devices: { [key: string]: TuyaDevice } = {};
 
 abstract class TuyaDevice {
 	constructor(
@@ -60,6 +63,10 @@ export interface RawValMap { [key: string]: unknown; }
 export interface ValMap { [key: string]: number; }
 
 abstract class MappableTuyaDevice extends TuyaDevice {
+	public static resetGauges() {
+		MappableTuyaDevice.gauges = {};
+	}
+
 	protected static gauges?: { [key: string]: Gauge };
 	protected dpsMap?: DPSMap;
 	protected reversveDpsMap?: DPSMap;
@@ -200,21 +207,28 @@ class StitchTuyaSocket extends MappableTuyaDevice {
 	}
 
 	public async turnOn() {
-		await this.set({ on: 1 });
+		await this.setPower(true);
 	}
 
 	public async turnOff() {
-		await this.set({ on: 0 });
+		await this.setPower(false);
 	}
 
-	public async setPower(on: number) {
-		await this.set({ on });
+	public async setPower(on: boolean) {
+		await this.set({ on: on ? 1 : 0 });
 	}
 }
 
+let lastDeviceRefresh = 0;
 async function outerPoll() {
 	console.log('Poll start');
+
 	const timeout = setTimeout(() => process.exit(2), 30000);
+
+	if (Date.now() - lastDeviceRefresh > DEVICE_REFRESH_INTERVAL) {
+		await refreshDevices();
+	}
+
 	try {
 		await poll();
 		DATA_OK = true;
@@ -223,8 +237,11 @@ async function outerPoll() {
 		console.error((<Error>e).stack || e);
 		process.exit(1);
 	}
+
 	console.log('Poll end');
+
 	clearTimeout(timeout);
+
 	setTimeout(outerPoll, 2000);
 }
 
@@ -249,13 +266,35 @@ async function main() {
 
 	console.log('Login done');
 
+	await refreshDevices();
+
+	console.log('Main end');
+	clearTimeout(timeout);
+
+	// tslint:disable-next-line:no-floating-promises
+	outerPoll();
+}
+
+async function refreshDevices() {
+	lastDeviceRefresh = Date.now();
+	devices = {};
+	MappableTuyaDevice.resetGauges();
+
+	const minDpMaxTime = Date.now() - DEVICE_INACTIVE_TIMEOUT;
+
 	const locations = await globalApi.request({ action: 'tuya.m.location.list' });
 	console.log('Got locations done');
 
 	for (const location of locations) {
 		const rawDevices = await globalApi.request({ action: 'tuya.m.my.group.device.list', gid: location.groupId });
-		console.log('Got product');
+		console.log('Got products');
 		for (const device of rawDevices) {
+			console.log('Device: ', device.name, device.dpMaxTime, minDpMaxTime);
+
+			if (device.dpMaxTime && device.dpMaxTime < minDpMaxTime) {
+				continue;
+			}
+
 			let tuyaDev;
 			switch (device.productId) {
 				case 'pLrthS5AKLKbAQ77':
@@ -269,12 +308,6 @@ async function main() {
 			}
 		}
 	}
-
-	console.log('Main end');
-	clearTimeout(timeout);
-
-	// tslint:disable-next-line:no-floating-promises
-	outerPoll();
 }
 
 async function outerMain() {

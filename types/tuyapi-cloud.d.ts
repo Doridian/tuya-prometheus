@@ -42,6 +42,7 @@ declare module '@tuyapi/cloud' {
 
     export interface DeviceResponse {
         productId: string;
+        dpMaxTime?: number;
         name: string;
         devId: string;
     }
